@@ -1,6 +1,5 @@
+
 import type { Config } from "tailwindcss";
-import { fontFamily } from "tailwindcss/defaultTheme";
-import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
 	darkMode: ["class"],
@@ -20,10 +19,6 @@ export default {
 			}
 		},
 		extend: {
-			fontFamily: {
-				sans: ["Inter", ...fontFamily.sans],
-				serif: ["Playfair Display", ...fontFamily.serif],
-			},
 			colors: {
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
@@ -57,10 +52,7 @@ export default {
 				card: {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
-				},
-				'handmade': "#D96D6D",
-				'ai-generated': "#4C8DE5",
-				'digital-print': "#4EE5D3",
+				}
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
@@ -109,5 +101,5 @@ export default {
 			}
 		}
 	},
-	plugins: [tailwindcssAnimate],
+	plugins: [require("tailwindcss-animate")],
 } satisfies Config;

@@ -18,10 +18,6 @@ export const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
               Scan Artwork
               <span className="absolute bottom-[-2px] left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
             </Link>
-            <Link to="/dashboard" className="text-sm font-medium text-gray-300 hover:text-white transition-colors relative group">
-              Dashboard
-              <span className="absolute bottom-[-2px] left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
-            </Link>
             <button className="text-sm font-medium text-gray-300 hover:text-white transition-colors relative group">
               Sign In
               <span className="absolute bottom-[-2px] left-0 w-full h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left duration-300"></span>
