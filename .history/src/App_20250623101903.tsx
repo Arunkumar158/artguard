@@ -58,6 +58,12 @@ function App() {
   );
 }
 
+const AppWrapper = () => (
+  <Router>
+    <App />
+  </Router>
+);
+
 function ProtectedRoute({
   session,
   children,
@@ -72,4 +78,4 @@ function ProtectedRoute({
   return <>{children}</>;
 }
 
-export default App;
+export default AppWrapper;
