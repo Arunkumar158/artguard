@@ -16,7 +16,6 @@ import ResetPasswordPage from "./pages/ResetPassword";
 import Insights from "./pages/Insights";
 import ApiAccess from "./pages/ApiAccess";
 import ScanHistory from "./pages/ScanHistory";
-import Account from "./pages/Account";
 import { Toaster } from "./components/ui/toaster";
 import { MainLayout } from "./components/MainLayout";
 
@@ -50,7 +49,6 @@ function App() {
         <Route path="/insights" element={<Insights />} />
         <Route path="/api-access" element={<ApiAccess />} />
         <Route path="/scan-history" element={<ScanHistory />} />
-        <Route path="/account" element={<Account />} />
         <Route
           path="/dashboard"
           element={

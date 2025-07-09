@@ -1,0 +1,167 @@
+import React, { useState } from "react";
+import { Card, CardHeader, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
+import { Dialog, DialogTrigger, DialogContent } from "@/components/ui/dialog";
+import { useToast } from "@/components/ui/use-toast";
+import { MainLayout } from "@/components/MainLayout";
+import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer, BarChart, Bar, XAxis, YAxis } from "recharts";
+import { Info, ThumbsUp, ThumbsDown, Palette, Bot, Printer } from "lucide-react";
+
+const statCards = [
+  {
+    title: "Total Scans",
+    value: 24,
+    icon: <Palette className="w-7 h-7 text-[#FF7F50]" />, // 🎨
+    desc: "All artwork scans",
+  },
+  {
+    title: "Handmade Scans",
+    value: 18,
+    icon: <Palette className="w-7 h-7 text-[#FF7F50]" />, // 🎨
+    desc: "Handmade classified",
+  },
+  {
+    title: "AI-Generated",
+    value: 5,
+    icon: <Bot className="w-7 h-7 text-[#FF7F50]" />, // 🤖
+    desc: "AI art detected",
+  },
+];
+
+const pieData = [
+  { name: "Handmade", value: 75 },
+  { name: "AI-Generated", value: 20 },
+  { name: "Printed", value: 5 },
+];
+const pieColors = ["#FF7F50", "#4C8DE5", "#A3E635"];
+
+const barData = [
+  { week: "W1", scans: 4 },
+  { week: "W2", scans: 6 },
+  { week: "W3", scans: 5 },
+  { week: "W4", scans: 7 },
+  { week: "W5", scans: 2 },
+  { week: "W6", scans: 0 },
+  { week: "W7", scans: 1 },
+];
+
+const Insights = () => {
+  const { toast } = useToast();
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
+
+  const handleFeedback = (positive: boolean) => {
+    toast({
+      title: "Thanks for your feedback!",
+      description: positive ? "We're glad you found it helpful." : "We'll use your feedback to improve.",
+    });
+    setFeedbackOpen(false);
+  };
+
+  return (
+    <MainLayout>
+      <div className="max-w-5xl mx-auto px-4 md:px-8">
+        {/* Page Title */}
+        <div className="mb-8 text-center">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#111827] flex items-center justify-center gap-2">
+            <span role="img" aria-label="chart">📊</span> Insights Overview
+          </h1>
+          <p className="text-lg text-muted-foreground mt-2">See how your uploaded artworks have been classified</p>
+        </div>
+
+        {/* Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 mb-10">
+          {statCards.map((card, i) => (
+            <Card key={card.title} className="bg-white rounded-xl shadow-md flex flex-col items-center py-6 border-0">
+              <CardHeader className="flex flex-col items-center gap-2 p-0 mb-2">
+                {card.icon}
+                <CardTitle className="text-xl font-semibold text-[#111827]">{card.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex flex-col items-center p-0">
+                <span className="text-3xl font-bold text-[#FF7F50]">{card.value}</span>
+                <CardDescription className="mt-1">{card.desc}</CardDescription>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          {/* Pie Chart */}
+          <Card className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+            <CardHeader className="flex flex-row items-center gap-2 p-0 mb-4">
+              <span className="text-lg font-semibold text-[#111827]">Classification Breakdown</span>
+            </CardHeader>
+            <CardContent className="w-full flex flex-col items-center p-0">
+              <ResponsiveContainer width="100%" height={220}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={70}
+                    label={({ percent }) => `${(percent * 100).toFixed(0)}%`}
+                  >
+                    {pieData.map((entry, idx) => (
+                      <Cell key={`cell-${idx}`} fill={pieColors[idx % pieColors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend verticalAlign="bottom" iconType="circle"/>
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          {/* Bar Chart */}
+          <Card className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center">
+            <CardHeader className="flex flex-row items-center gap-2 p-0 mb-4">
+              <span className="text-lg font-semibold text-[#111827]">Weekly Scan Trend</span>
+            </CardHeader>
+            <CardContent className="w-full flex flex-col items-center p-0">
+              <ResponsiveContainer width="100%" height={220}>
+                <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                  <XAxis dataKey="week" tick={{ fill: '#111827', fontSize: 12 }} />
+                  <YAxis tick={{ fill: '#111827', fontSize: 12 }} allowDecimals={false} />
+                  <Tooltip />
+                  <Bar dataKey="scans" fill="#FF7F50" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Model Accuracy Box */}
+        <Card className="bg-white rounded-xl shadow-md flex flex-row items-center gap-4 p-6 mb-10 border-l-4 border-[#FF7F50]">
+          <Info className="w-7 h-7 text-[#FF7F50] flex-shrink-0" />
+          <div>
+            <div className="font-semibold text-[#111827]">Scans are analyzed using our custom MobileNetV2-based model (v2.1), trained on curated data. Current accuracy: <span className="text-[#FF7F50] font-bold">93.4%</span>.</div>
+          </div>
+        </Card>
+
+        {/* Feedback CTA */}
+        <div className="flex flex-col items-center mb-8">
+          <div className="flex items-center gap-3">
+            <span className="text-base font-medium text-[#111827]">Was this page helpful?</span>
+            <button
+              className="rounded-full p-2 hover:bg-[#FF7F50]/10 transition"
+              aria-label="Yes"
+              onClick={() => handleFeedback(true)}
+            >
+              <ThumbsUp className="w-6 h-6 text-[#FF7F50]" />
+            </button>
+            <button
+              className="rounded-full p-2 hover:bg-[#FF7F50]/10 transition"
+              aria-label="No"
+              onClick={() => handleFeedback(false)}
+            >
+              <ThumbsDown className="w-6 h-6 text-[#FF7F50]" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </MainLayout>
+  );
+};
+
+export default Insights; 

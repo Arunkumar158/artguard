@@ -57,13 +57,22 @@ export const Header: React.FC<HeaderProps> = ({ session }) => {
               </Button>
             </>
           ) : (
-            <Link
-              to="/auth"
-              className="text-sm font-medium text-gray-300 hover:text-white transition-colors relative group px-4 py-2 rounded-md border border-transparent hover:border-brand-primary focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2"
-              style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', height: '2.25rem' }}
-            >
-              Sign In
-            </Link>
+            <>
+              <Button
+                onClick={() => navigate("/auth")}
+                variant="default"
+                size="sm"
+              >
+                Sign In
+              </Button>
+              <Button
+                onClick={() => navigate("/auth")}
+                variant="outline"
+                size="sm"
+              >
+                Sign Up
+              </Button>
+            </>
           )}
         </nav>
       </div>
