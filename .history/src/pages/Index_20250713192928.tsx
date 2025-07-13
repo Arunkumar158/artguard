@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ScanButton } from "@/components/ScanButton";
 import { ResultDisplay } from "@/components/ResultDisplay";
+import { MainLayout } from "@/components/MainLayout";
 import { ArtworkScanService } from "@/services/ArtworkScanService";
 import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
