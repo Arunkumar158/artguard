@@ -58,7 +58,7 @@ export default function ScanHistory() {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-start py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
       <div className="w-full max-w-5xl mx-auto">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-center text-foreground">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-center" style={{ color: "#FF7F50" }}>
           Scan History
         </h1>
         <p className="text-center text-sm sm:text-base text-muted-foreground mt-2 mb-6">
@@ -79,23 +79,24 @@ export default function ScanHistory() {
         {isEmpty ? (
           <div className="flex flex-col items-center justify-center py-12 sm:py-20">
             {/* Optional icon */}
-            <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-4 text-brand"><path stroke="currentColor" strokeWidth="1.5" d="M12 20v-6m0 0V4m0 10H6m6 0h6"/></svg>
+            <svg width="48" height="48" fill="none" viewBox="0 0 24 24" className="mb-4 text-orange-400" style={{ color: "#FF7F50" }}><path stroke="currentColor" strokeWidth="1.5" d="M12 20v-6m0 0V4m0 10H6m6 0h6"/></svg>
             <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-2">No scans yet!</h2>
             <p className="text-sm sm:text-base text-muted-foreground mb-6 text-center">Try uploading your first artwork to see scan results here.</p>
-            <Button asChild className="w-full sm:w-auto bg-brand hover:bg-brand/90 text-white font-semibold">
+            <Button asChild style={{ backgroundColor: "#FF7F50", color: "white" }} className="w-full sm:w-auto">
               <a href="/upload">Upload Artwork</a>
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {scans.map(scan => (
-              <Card key={scan.id} className="rounded-2xl shadow-md hover:shadow-lg transition-shadow">
-                                  <img
-                    src={scan.image}
-                    alt="Artwork preview"
-                    className="w-full h-40 sm:h-48 object-cover rounded-t-2xl"
-                  />
-                <CardContent className="p-4 sm:p-6 flex flex-col gap-3">
+              <Card key={scan.id} className="shadow-lg hover:shadow-xl transition-shadow">
+                <img
+                  src={scan.image}
+                  alt="Artwork preview"
+                  className="w-full h-40 sm:h-48 object-cover rounded-t-md"
+                  style={{ borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
+                />
+                <CardContent className="p-3 sm:p-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2">
                     <Badge className={cn(labelColors[scan.label], "text-xs px-2 py-1 rounded")}>{scan.label}</Badge>
                     <span className="text-xs text-muted-foreground ml-auto">{formatDate(scan.date)}</span>
@@ -103,7 +104,7 @@ export default function ScanHistory() {
                   <div className="mt-2">
                     <span className="font-medium text-sm sm:text-base">Confidence:</span>
                     <span className="ml-2 text-sm">{scan.confidence}%</span>
-                    <Progress value={scan.confidence} className="mt-1 h-2 bg-gray-100" />
+                    <Progress value={scan.confidence} className="mt-1 h-2 bg-gray-100" style={{ accentColor: "#FF7F50" }} />
                   </div>
                   <div className="flex flex-col sm:flex-row gap-2 mt-4">
                     <Button variant="outline" className="flex-1 text-xs sm:text-sm" asChild>

@@ -137,7 +137,7 @@ export default function Account() {
 
         {/* Billing Tab */}
         <TabsContent value="billing">
-          <Card className="max-w-xl mx-auto rounded-2xl shadow-md">
+          <Card className="max-w-xl mx-auto">
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-lg sm:text-xl">Billing</CardTitle>
               <CardDescription className="text-sm sm:text-base">Manage your subscription and invoices.</CardDescription>
@@ -146,7 +146,7 @@ export default function Account() {
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                   <span className="font-medium text-sm sm:text-base">Current Plan:</span>
-                  <span className="font-semibold text-sm sm:text-base text-brand">{billing.plan}</span>
+                  <span className="font-semibold text-sm sm:text-base" style={{ color: billing.planColor }}>{billing.plan}</span>
                 </div>
                 <div className="text-xs sm:text-sm text-muted-foreground mb-2">Renews on: <span className="font-semibold text-black">{billing.renewal}</span></div>
                 <div className="mb-2">
@@ -162,8 +162,8 @@ export default function Account() {
                   </div>
                 </div>
                 <div className="flex flex-col sm:flex-row gap-2 mt-4">
-                  <Button variant="outline" className="flex-1 border-brand text-brand hover:bg-brand/10 text-sm">Manage Subscription</Button>
-                  <Button className="flex-1 bg-brand hover:bg-brand/90 text-white font-semibold text-sm">Upgrade/Downgrade</Button>
+                  <Button variant="outline" className="flex-1 border-[#FF7F50] text-[#FF7F50] hover:bg-[#FF7F50]/10 text-sm">Manage Subscription</Button>
+                  <Button className="flex-1 bg-[#FF7F50] hover:bg-[#FF7F50]/90 text-white font-semibold text-sm">Upgrade/Downgrade</Button>
                 </div>
               </div>
             </CardContent>
@@ -172,7 +172,7 @@ export default function Account() {
 
         {/* Security Tab */}
         <TabsContent value="security">
-          <Card className="max-w-xl mx-auto rounded-2xl shadow-md">
+          <Card className="max-w-xl mx-auto">
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-lg sm:text-xl">Security</CardTitle>
               <CardDescription className="text-sm sm:text-base">Manage your password and account security.</CardDescription>
@@ -225,7 +225,7 @@ export default function Account() {
 
         {/* API Tab */}
         <TabsContent value="api">
-          <Card className="max-w-xl mx-auto rounded-2xl shadow-md">
+          <Card className="max-w-xl mx-auto">
             <CardHeader className="p-4 sm:p-6">
               <CardTitle className="text-lg sm:text-xl">API Usage</CardTitle>
               <CardDescription className="text-sm sm:text-base">Manage your API key and monitor usage.</CardDescription>
@@ -236,10 +236,10 @@ export default function Account() {
                   <span className="font-mono text-sm sm:text-lg tracking-wider bg-gray-100 px-3 py-2 sm:py-1 rounded select-all break-all flex-1">
                     {apiKey}
                   </span>
-                  <Button size="icon" variant="outline" className="border-gray-300 hover:border-brand hover:bg-brand/10 w-full sm:w-auto" aria-label="Copy API Key" onClick={handleCopy}>
+                  <Button size="icon" variant="outline" className="border-gray-300 hover:border-[#FF7F50] hover:bg-[#FF7F50]/10 w-full sm:w-auto" aria-label="Copy API Key" onClick={handleCopy}>
                     <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
-                  <Button variant="destructive" className="bg-brand hover:bg-brand/90 w-full sm:w-auto text-sm" onClick={() => setRegenOpen(true)}>
+                  <Button variant="destructive" className="bg-[#FF7F50] hover:bg-[#FF7F50]/90 w-full sm:w-auto text-sm" onClick={() => setRegenOpen(true)}>
                     Regenerate Key
                   </Button>
                 </div>

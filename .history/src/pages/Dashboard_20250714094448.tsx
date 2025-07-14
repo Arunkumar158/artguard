@@ -11,6 +11,7 @@ import { ScanHistory } from "@/components/ScanHistory";
 import { ImageUploader } from "@/components/ImageUploader";
 import { cn } from "@/lib/utils";
 import { HelpCircle } from "lucide-react";
+import { MainLayout } from "@/components/MainLayout";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 interface DashboardProps {
@@ -67,12 +68,13 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
   const [showFeedback, setShowFeedback] = useState(false);
 
   return (
-    <div className="space-y-6 sm:space-y-8 lg:space-y-10 px-4 sm:px-6 lg:px-8">
+    <MainLayout session={session}>
+      <div className="space-y-6 sm:space-y-8 lg:space-y-10 px-4 sm:px-6 lg:px-8">
         {/* Upload Artwork Panel */}
         <Card className="mb-6 rounded-2xl shadow-md">
           <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-6">
             <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Upload Artwork</h2>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">Upload Artwork</h2>
               <p className="text-sm sm:text-base text-muted-foreground mt-1">Scan your artwork for authenticity.</p>
             </div>
             <div className="flex items-center gap-2">
@@ -103,7 +105,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
 
         {/* Recent Scans Section */}
         <section className="px-4 sm:px-0">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 text-foreground">Recent Scans</h2>
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-4">Recent Scans</h2>
           <div className="flex gap-4 overflow-x-auto pb-2">
             {dummyScans.map((scan) => (
               <Card key={scan.id} className="min-w-[280px] sm:min-w-[260px] max-w-xs flex-shrink-0 rounded-2xl shadow-md bg-[#F9F6F2] flex flex-col">
@@ -133,15 +135,15 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
 
         {/* Insights Section */}
         <section className="px-4 sm:px-0">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 text-foreground">Insights</h2>
-          <Card className="w-full max-w-2xl mx-auto rounded-2xl shadow-md">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-4">Insights</h2>
+          <Card className="w-full max-w-2xl mx-auto">
             <CardContent className="p-4 sm:p-6">
               <ChartContainer
                 config={{ Handmade: { color: "#D96D6D" }, "AI-Generated": { color: "#4C8DE5" }, "Digital Print": { color: "#4EE5D3" } }}
               >
                 {/* Example: Pie chart using recharts */}
-                <PieChart width={400} height={200}>
-                  <Pie
+                <recharts.PieChart width={400} height={200}>
+                  <recharts.Pie
                     data={insightsData}
                     dataKey="value"
                     nameKey="name"
@@ -152,11 +154,11 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
                     label
                   >
                     {insightsData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={index === 0 ? "#D96D6D" : index === 1 ? "#4C8DE5" : "#4EE5D3"} />
+                      <recharts.Cell key={`cell-${index}`} fill={index === 0 ? "#D96D6D" : index === 1 ? "#4C8DE5" : "#4EE5D3"} />
                     ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
+                  </recharts.Pie>
+                  <recharts.Tooltip />
+                </recharts.PieChart>
               </ChartContainer>
               <div className="mt-4 text-sm sm:text-base text-muted-foreground">Total scans this month: <span className="font-bold">38</span></div>
             </CardContent>
@@ -165,8 +167,8 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
 
         {/* API Key & Usage Panel */}
         <section className="px-4 sm:px-0">
-          <h2 className="text-lg sm:text-xl md:text-2xl font-semibold mb-4 text-foreground">API Key & Usage</h2>
-          <Card className="w-full max-w-xl mx-auto rounded-2xl shadow-md">
+          <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold mb-4">API Key & Usage</h2>
+          <Card className="w-full max-w-xl mx-auto">
             <CardContent className="flex flex-col gap-4 p-4 sm:p-6">
               <div className="flex flex-col sm:flex-row sm:items-center gap-2">
                 <span className="font-mono bg-gray-100 px-3 py-1 rounded text-xs sm:text-sm select-all break-all">sk-test-1234-5678-ABCD-EFGH</span>
@@ -185,7 +187,8 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
         <Dialog open={showFeedback} onOpenChange={setShowFeedback}>
           <DialogTrigger asChild>
             <Button
-              className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 rounded-full shadow-lg p-0 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-brand hover:bg-brand/90 text-white text-2xl"
+              className="fixed bottom-4 sm:bottom-6 right-4 sm:right-6 z-50 rounded-full shadow-lg p-0 w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-brand-primary hover:bg-brand-primary/90 text-white text-2xl"
+              style={{ borderRadius: "50%" }}
               aria-label="Help & Feedback"
             >
               <HelpCircle className="w-6 h-6 sm:w-7 sm:h-7" />
@@ -205,6 +208,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
           </DialogContent>
         </Dialog>
       </div>
+    </MainLayout>
   );
 };
 

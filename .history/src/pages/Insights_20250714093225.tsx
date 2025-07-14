@@ -59,7 +59,7 @@ const Insights = () => {
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       {/* Page Title */}
       <div className="mb-6 sm:mb-8 text-center">
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground flex items-center justify-center gap-2">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#111827] flex items-center justify-center gap-2">
           <span role="img" aria-label="chart">📊</span> Insights Overview
         </h1>
         <p className="text-sm sm:text-base lg:text-lg text-muted-foreground mt-2">See how your uploaded artworks have been classified</p>
@@ -68,13 +68,13 @@ const Insights = () => {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 mb-8 sm:mb-10">
         {statCards.map((card, i) => (
-          <Card key={card.title} className="rounded-2xl shadow-md flex flex-col items-center py-4 sm:py-6">
+          <Card key={card.title} className="bg-white rounded-xl shadow-md flex flex-col items-center py-4 sm:py-6 border-0">
             <CardHeader className="flex flex-col items-center gap-2 p-0 mb-2">
               {card.icon}
-              <CardTitle className="text-lg sm:text-xl font-semibold text-foreground text-center">{card.title}</CardTitle>
+              <CardTitle className="text-lg sm:text-xl font-semibold text-[#111827] text-center">{card.title}</CardTitle>
             </CardHeader>
             <CardContent className="flex flex-col items-center p-0">
-              <span className="text-2xl sm:text-3xl font-bold text-brand">{card.value}</span>
+              <span className="text-2xl sm:text-3xl font-bold text-[#FF7F50]">{card.value}</span>
               <CardDescription className="mt-1 text-xs sm:text-sm text-center">{card.desc}</CardDescription>
             </CardContent>
           </Card>
@@ -84,9 +84,9 @@ const Insights = () => {
       {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-8 sm:mb-10">
         {/* Pie Chart */}
-        <Card className="rounded-2xl shadow-md p-4 sm:p-6 flex flex-col items-center">
+        <Card className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col items-center">
           <CardHeader className="flex flex-row items-center gap-2 p-0 mb-4">
-            <span className="text-base sm:text-lg font-semibold text-foreground">Classification Breakdown</span>
+            <span className="text-base sm:text-lg font-semibold text-[#111827]">Classification Breakdown</span>
           </CardHeader>
           <CardContent className="w-full flex flex-col items-center p-0">
             <ResponsiveContainer width="100%" height={200} className="min-h-[200px]">
@@ -112,17 +112,17 @@ const Insights = () => {
         </Card>
 
         {/* Bar Chart */}
-        <Card className="rounded-2xl shadow-md p-4 sm:p-6 flex flex-col items-center">
+        <Card className="bg-white rounded-xl shadow-md p-4 sm:p-6 flex flex-col items-center">
           <CardHeader className="flex flex-row items-center gap-2 p-0 mb-4">
-            <span className="text-base sm:text-lg font-semibold text-foreground">Weekly Scan Trend</span>
+            <span className="text-base sm:text-lg font-semibold text-[#111827]">Weekly Scan Trend</span>
           </CardHeader>
           <CardContent className="w-full flex flex-col items-center p-0">
             <ResponsiveContainer width="100%" height={200} className="min-h-[200px]">
               <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-                <XAxis dataKey="week" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
-                <YAxis tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="week" tick={{ fill: '#111827', fontSize: 12 }} />
+                <YAxis tick={{ fill: '#111827', fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="scans" fill="hsl(var(--brand-primary))" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="scans" fill="#FF7F50" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -130,30 +130,30 @@ const Insights = () => {
       </div>
 
       {/* Model Accuracy Box */}
-      <Card className="rounded-2xl shadow-md flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6 mb-8 sm:mb-10 border-l-4 border-brand">
-        <Info className="w-6 h-6 sm:w-7 sm:h-7 text-brand flex-shrink-0" />
+      <Card className="bg-white rounded-xl shadow-md flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6 mb-8 sm:mb-10 border-l-4 border-[#FF7F50]">
+        <Info className="w-6 h-6 sm:w-7 sm:h-7 text-[#FF7F50] flex-shrink-0" />
         <div>
-          <div className="font-semibold text-foreground text-sm sm:text-base">Scans are analyzed using our custom MobileNetV2-based model (v2.1), trained on curated data. Current accuracy: <span className="text-brand font-bold">93.4%</span>.</div>
+          <div className="font-semibold text-[#111827] text-sm sm:text-base">Scans are analyzed using our custom MobileNetV2-based model (v2.1), trained on curated data. Current accuracy: <span className="text-[#FF7F50] font-bold">93.4%</span>.</div>
         </div>
       </Card>
 
       {/* Feedback CTA */}
       <div className="flex flex-col items-center mb-6 sm:mb-8">
         <div className="flex items-center gap-3">
-          <span className="text-sm sm:text-base font-medium text-foreground">Was this page helpful?</span>
+          <span className="text-sm sm:text-base font-medium text-[#111827]">Was this page helpful?</span>
           <button
-            className="rounded-full p-2 hover:bg-brand/10 transition"
+            className="rounded-full p-2 hover:bg-[#FF7F50]/10 transition"
             aria-label="Yes"
             onClick={() => handleFeedback(true)}
           >
-            <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 text-brand" />
+            <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 text-[#FF7F50]" />
           </button>
           <button
-            className="rounded-full p-2 hover:bg-brand/10 transition"
+            className="rounded-full p-2 hover:bg-[#FF7F50]/10 transition"
             aria-label="No"
             onClick={() => handleFeedback(false)}
           >
-            <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 text-brand" />
+            <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 text-[#FF7F50]" />
           </button>
         </div>
       </div>

@@ -37,7 +37,7 @@
 
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 16 100% 66%; /* Brand primary for focus rings */
+    --ring: 45 74% 61%; /* Deep Ochre Gold for focus rings */
 
     --radius: 0.5rem;
   }
@@ -74,7 +74,7 @@
 
     --border: 0 0% 25%;
     --input: 0 0% 25%;
-    --ring: 16 100% 66%;
+    --ring: 45 74% 61%;
   }
 }
 

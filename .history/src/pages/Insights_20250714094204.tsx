@@ -119,10 +119,10 @@ const Insights = () => {
           <CardContent className="w-full flex flex-col items-center p-0">
             <ResponsiveContainer width="100%" height={200} className="min-h-[200px]">
               <BarChart data={barData} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-                <XAxis dataKey="week" tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} />
-                <YAxis tick={{ fill: 'hsl(var(--foreground))', fontSize: 12 }} allowDecimals={false} />
+                <XAxis dataKey="week" tick={{ fill: '#111827', fontSize: 12 }} />
+                <YAxis tick={{ fill: '#111827', fontSize: 12 }} allowDecimals={false} />
                 <Tooltip />
-                <Bar dataKey="scans" fill="hsl(var(--brand-primary))" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="scans" fill="#FF7F50" radius={[8, 8, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
@@ -130,30 +130,30 @@ const Insights = () => {
       </div>
 
       {/* Model Accuracy Box */}
-      <Card className="rounded-2xl shadow-md flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6 mb-8 sm:mb-10 border-l-4 border-brand">
-        <Info className="w-6 h-6 sm:w-7 sm:h-7 text-brand flex-shrink-0" />
+      <Card className="bg-white rounded-xl shadow-md flex flex-col sm:flex-row sm:items-center gap-4 p-4 sm:p-6 mb-8 sm:mb-10 border-l-4 border-[#FF7F50]">
+        <Info className="w-6 h-6 sm:w-7 sm:h-7 text-[#FF7F50] flex-shrink-0" />
         <div>
-          <div className="font-semibold text-foreground text-sm sm:text-base">Scans are analyzed using our custom MobileNetV2-based model (v2.1), trained on curated data. Current accuracy: <span className="text-brand font-bold">93.4%</span>.</div>
+          <div className="font-semibold text-[#111827] text-sm sm:text-base">Scans are analyzed using our custom MobileNetV2-based model (v2.1), trained on curated data. Current accuracy: <span className="text-[#FF7F50] font-bold">93.4%</span>.</div>
         </div>
       </Card>
 
       {/* Feedback CTA */}
       <div className="flex flex-col items-center mb-6 sm:mb-8">
         <div className="flex items-center gap-3">
-          <span className="text-sm sm:text-base font-medium text-foreground">Was this page helpful?</span>
+          <span className="text-sm sm:text-base font-medium text-[#111827]">Was this page helpful?</span>
           <button
-            className="rounded-full p-2 hover:bg-brand/10 transition"
+            className="rounded-full p-2 hover:bg-[#FF7F50]/10 transition"
             aria-label="Yes"
             onClick={() => handleFeedback(true)}
           >
-            <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 text-brand" />
+            <ThumbsUp className="w-5 h-5 sm:w-6 sm:h-6 text-[#FF7F50]" />
           </button>
           <button
-            className="rounded-full p-2 hover:bg-brand/10 transition"
+            className="rounded-full p-2 hover:bg-[#FF7F50]/10 transition"
             aria-label="No"
             onClick={() => handleFeedback(false)}
           >
-            <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 text-brand" />
+            <ThumbsDown className="w-5 h-5 sm:w-6 sm:h-6 text-[#FF7F50]" />
           </button>
         </div>
       </div>

@@ -11,6 +11,7 @@ import { ScanHistory } from "@/components/ScanHistory";
 import { ImageUploader } from "@/components/ImageUploader";
 import { cn } from "@/lib/utils";
 import { HelpCircle } from "lucide-react";
+import { MainLayout } from "@/components/MainLayout";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 interface DashboardProps {

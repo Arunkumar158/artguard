@@ -98,7 +98,7 @@ export function AuthForm() {
         title: "Signed up successfully",
         description: "Please check your email to verify your account.",
       });
-      navigate("/");
+      navigate("/dashboard");
     }
     setIsSubmitting(false);
   }

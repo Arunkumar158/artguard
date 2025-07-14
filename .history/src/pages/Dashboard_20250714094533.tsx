@@ -11,6 +11,7 @@ import { ScanHistory } from "@/components/ScanHistory";
 import { ImageUploader } from "@/components/ImageUploader";
 import { cn } from "@/lib/utils";
 import { HelpCircle } from "lucide-react";
+import { MainLayout } from "@/components/MainLayout";
 import { PieChart, Pie, Cell, Tooltip } from "recharts";
 
 interface DashboardProps {
@@ -67,12 +68,13 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
   const [showFeedback, setShowFeedback] = useState(false);
 
   return (
-    <div className="space-y-6 sm:space-y-8 lg:space-y-10 px-4 sm:px-6 lg:px-8">
+    <MainLayout session={session}>
+      <div className="space-y-6 sm:space-y-8 lg:space-y-10 px-4 sm:px-6 lg:px-8">
         {/* Upload Artwork Panel */}
         <Card className="mb-6 rounded-2xl shadow-md">
           <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:p-6">
             <div>
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">Upload Artwork</h2>
+              <h2 className="text-xl sm:text-2xl lg:text-3xl font-bold">Upload Artwork</h2>
               <p className="text-sm sm:text-base text-muted-foreground mt-1">Scan your artwork for authenticity.</p>
             </div>
             <div className="flex items-center gap-2">
@@ -205,6 +207,7 @@ const Dashboard: React.FC<DashboardProps> = ({ session }) => {
           </DialogContent>
         </Dialog>
       </div>
+    </MainLayout>
   );
 };
 

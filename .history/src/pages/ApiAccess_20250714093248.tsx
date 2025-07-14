@@ -43,14 +43,14 @@ export default function ApiAccess() {
       <div className="w-full max-w-4xl space-y-6 sm:space-y-8">
         {/* Page Title */}
         <div className="mb-4 sm:mb-6">
-                  <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground flex items-center gap-2">
-          <span role="img" aria-label="API Access">🔐</span> API Access
-        </h1>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold flex items-center gap-2">
+            <span role="img" aria-label="API Access">🔐</span> API Access
+          </h1>
           <p className="text-sm sm:text-base text-muted-foreground mt-1">Use this key to integrate ArtGuard into your app.</p>
         </div>
 
         {/* API Key Card */}
-        <Card className="rounded-2xl shadow-md">
+        <Card className="shadow-sm">
           <CardHeader className="p-4 sm:p-6">
             <CardTitle className="text-sm sm:text-base">Your API Key</CardTitle>
           </CardHeader>
@@ -65,7 +65,7 @@ export default function ApiAccess() {
                     <Button
                       size="icon"
                       variant="outline"
-                      className="border-gray-300 hover:border-brand hover:bg-brand/10 w-full sm:w-auto"
+                      className="border-gray-300 hover:border-[#FF7F50] hover:bg-[#FF7F50]/10 w-full sm:w-auto"
                       aria-label="Copy API Key"
                       onClick={handleCopy}
                     >
@@ -82,7 +82,7 @@ export default function ApiAccess() {
                   <TooltipTrigger asChild>
                     <Button
                       variant="destructive"
-                      className="bg-brand hover:bg-brand/90 w-full sm:w-auto"
+                      className="bg-[#FF7F50] hover:bg-[#FF7F50]/90 w-full sm:w-auto"
                       onClick={() => setDialogOpen(true)}
                     >
                       Generate New Key
@@ -112,7 +112,7 @@ export default function ApiAccess() {
               </Button>
               <Button
                 variant="destructive"
-                className="bg-brand hover:bg-brand/90 w-full sm:w-auto"
+                className="bg-[#FF7F50] hover:bg-[#FF7F50]/90 w-full sm:w-auto"
                 onClick={handleRegenerate}
               >
                 Confirm
@@ -122,29 +122,29 @@ export default function ApiAccess() {
         </Dialog>
 
         {/* Usage Card */}
-        <Card className="rounded-2xl shadow-md">
+        <Card className="shadow-sm">
           <CardContent className="py-4 sm:py-5 p-4 sm:p-6">
             <div className="flex flex-col gap-2">
               <span className="text-xs sm:text-sm text-muted-foreground">
                 Usage this month: <span className="font-semibold text-black">{USAGE.toLocaleString()} / {LIMIT.toLocaleString()} API calls</span>
               </span>
-              <Progress value={USAGE_PERCENT} className="h-2 bg-gray-200" />
+              <Progress value={USAGE_PERCENT} className="h-2 bg-gray-200" style={{ accentColor: '#FF7F50' }} />
               <span className="text-xs text-muted-foreground mt-1">🕒 Resets on: {RESET_DATE}</span>
             </div>
           </CardContent>
         </Card>
 
         {/* Plan Card */}
-        <Card className="rounded-2xl shadow-md">
+        <Card className="shadow-sm">
           <CardContent className="py-4 sm:py-5 p-4 sm:p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <span className="font-medium text-sm sm:text-base">Current Plan: <span className="text-brand">Free (D2C)</span></span>
+              <span className="font-medium text-sm sm:text-base">Current Plan: <span className="text-[#FF7F50]">Free (D2C)</span></span>
               <div className="text-xs sm:text-sm text-muted-foreground mt-1">
                 Upgrade for more calls, API analytics, and support.
               </div>
             </div>
             <Button
-              className="bg-brand hover:bg-brand/90 text-white font-semibold mt-2 sm:mt-0 w-full sm:w-auto"
+              className="bg-[#FF7F50] hover:bg-[#FF7F50]/90 text-white font-semibold mt-2 sm:mt-0 w-full sm:w-auto"
             >
               🚀 Upgrade to PRO →
             </Button>
@@ -153,7 +153,7 @@ export default function ApiAccess() {
 
         {/* API Docs Link */}
         <div className="flex justify-center pt-2">
-          <Button asChild variant="outline" className="border-brand text-brand hover:bg-brand/10 w-full sm:w-auto">
+          <Button asChild variant="outline" className="border-[#FF7F50] text-[#FF7F50] hover:bg-[#FF7F50]/10 w-full sm:w-auto">
             <Link to="/docs">View API Documentation</Link>
           </Button>
         </div>

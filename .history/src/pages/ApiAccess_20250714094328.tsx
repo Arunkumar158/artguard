@@ -153,7 +153,7 @@ export default function ApiAccess() {
 
         {/* API Docs Link */}
         <div className="flex justify-center pt-2">
-          <Button asChild variant="outline" className="border-brand text-brand hover:bg-brand/10 w-full sm:w-auto">
+          <Button asChild variant="outline" className="border-[#FF7F50] text-[#FF7F50] hover:bg-[#FF7F50]/10 w-full sm:w-auto">
             <Link to="/docs">View API Documentation</Link>
           </Button>
         </div>

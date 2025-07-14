@@ -90,12 +90,13 @@ export default function ScanHistory() {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {scans.map(scan => (
               <Card key={scan.id} className="rounded-2xl shadow-md hover:shadow-lg transition-shadow">
-                                  <img
-                    src={scan.image}
-                    alt="Artwork preview"
-                    className="w-full h-40 sm:h-48 object-cover rounded-t-2xl"
-                  />
-                <CardContent className="p-4 sm:p-6 flex flex-col gap-3">
+                <img
+                  src={scan.image}
+                  alt="Artwork preview"
+                  className="w-full h-40 sm:h-48 object-cover rounded-t-md"
+                  style={{ borderTopLeftRadius: 8, borderTopRightRadius: 8 }}
+                />
+                <CardContent className="p-3 sm:p-4 flex flex-col gap-3">
                   <div className="flex items-center gap-2">
                     <Badge className={cn(labelColors[scan.label], "text-xs px-2 py-1 rounded")}>{scan.label}</Badge>
                     <span className="text-xs text-muted-foreground ml-auto">{formatDate(scan.date)}</span>

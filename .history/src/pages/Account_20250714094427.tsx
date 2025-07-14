@@ -239,7 +239,7 @@ export default function Account() {
                   <Button size="icon" variant="outline" className="border-gray-300 hover:border-brand hover:bg-brand/10 w-full sm:w-auto" aria-label="Copy API Key" onClick={handleCopy}>
                     <Copy className="w-4 h-4 sm:w-5 sm:h-5" />
                   </Button>
-                  <Button variant="destructive" className="bg-brand hover:bg-brand/90 w-full sm:w-auto text-sm" onClick={() => setRegenOpen(true)}>
+                  <Button variant="destructive" className="bg-[#FF7F50] hover:bg-[#FF7F50]/90 w-full sm:w-auto text-sm" onClick={() => setRegenOpen(true)}>
                     Regenerate Key
                   </Button>
                 </div>
