@@ -1,0 +1,8 @@
+django
+djangorestframework
+cloudinary
+torch
+supabase
+python-decouple
+xhtml2pdf
+django-cors-headers 
