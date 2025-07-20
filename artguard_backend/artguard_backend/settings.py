@@ -141,3 +141,7 @@ CLOUDINARY = {
     'api_key': CLOUDINARY_API_KEY,
     'api_secret': CLOUDINARY_API_SECRET,
 }
+
+# Supabase Configuration
+SUPABASE_URL = config('SUPABASE_URL', default='')
+SUPABASE_SERVICE_KEY = config('SUPABASE_SERVICE_KEY', default='')

@@ -1,7 +1,357 @@
+// Types for scan history and API responses
+export interface ScanRecord {
+  id: string;
+  user_id: string;
+  artwork_url: string;
+  result: Record<string, unknown>;
+  scan_timestamp: string;
+  file_size: number;
+  content_type: string;
+  upload_url: string;
+  public_id: string;
+  description: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
 
-// This service handles the communication with the backend API
-export class ArtworkScanService {
-  private static API_URL = "https://your-backend-url.com/predict";
+export interface ScanResult {
+  label: string;
+  confidence: number;
+  cloudinary_url?: string;
+  public_id?: string;
+}
+
+export interface UploadResponse {
+  success: boolean;
+  message: string;
+  data: {
+    url: string;
+    public_id: string;
+    filename: string;
+    user_id: string;
+    scan_id?: string;
+    supabase_logged: boolean;
+  };
+  warning?: string;
+}
+
+export interface ScanHistoryResponse {
+  success: boolean;
+  data: ScanRecord[];
+  pagination: {
+    limit: number;
+    offset: number;
+    total_count: number;
+  };
+}
+
+export interface AnalyticsResponse {
+  success: boolean;
+  data: {
+    total_scans: number;
+    total_file_size: number;
+    average_file_size: number;
+    period_days: number;
+    scans_per_day: number;
+  };
+}
+
+export interface SearchResponse {
+  success: boolean;
+  data: ScanRecord[];
+  query: string;
+  result_count: number;
+}
+
+export interface BatchDeleteResponse {
+  success: boolean;
+  message: string;
+  deleted_count: number;
+}
+
+export interface UpdateScanRequest {
+  scan_id: string;
+  updates: Partial<ScanRecord>;
+  user_id?: string;
+}
+
+export interface BatchDeleteRequest {
+  scan_ids: string[];
+  user_id?: string;
+}
+
+// API configuration
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+
+// Import Cloudinary utilities
+import { uploadToCloudinary, getCloudinaryConfig, CloudinaryUploadResponse } from '../lib/cloudinary';
+
+class ArtworkScanService {
+  private baseUrl: string;
+
+  constructor(baseUrl: string = API_BASE_URL) {
+    this.baseUrl = baseUrl;
+  }
+
+  // Helper method for making API requests
+  private async makeRequest<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const url = `${this.baseUrl}${endpoint}`;
+    
+    const defaultOptions: RequestInit = {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers,
+      },
+    };
+
+    const response = await fetch(url, { ...defaultOptions, ...options });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  // Upload image with enhanced logging
+  async uploadImage(
+    imageFile: File,
+    userId: string = 'anonymous',
+    description: string = ''
+  ): Promise<UploadResponse> {
+    const formData = new FormData();
+    formData.append('image', imageFile);
+    formData.append('user_id', userId);
+    if (description) {
+      formData.append('description', description);
+    }
+
+    const url = `${this.baseUrl}/upload/`;
+    const response = await fetch(url, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Upload failed! status: ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  // Get scan history with pagination
+  async getScanHistory(
+    userId: string,
+    limit: number = 50,
+    offset: number = 0
+  ): Promise<ScanHistoryResponse> {
+    const params = new URLSearchParams({
+      user_id: userId,
+      limit: limit.toString(),
+      offset: offset.toString(),
+    });
+
+    return this.makeRequest<ScanHistoryResponse>(`/scan-history/?${params}`);
+  }
+
+  // Get scan analytics
+  async getScanAnalytics(
+    userId: string,
+    days: number = 30
+  ): Promise<AnalyticsResponse> {
+    const params = new URLSearchParams({
+      user_id: userId,
+      days: days.toString(),
+    });
+
+    return this.makeRequest<AnalyticsResponse>(`/analytics/?${params}`);
+  }
+
+  // Search scan history
+  async searchScanHistory(
+    userId: string,
+    query: string,
+    limit: number = 20
+  ): Promise<SearchResponse> {
+    const params = new URLSearchParams({
+      user_id: userId,
+      query,
+      limit: limit.toString(),
+    });
+
+    return this.makeRequest<SearchResponse>(`/search/?${params}`);
+  }
+
+  // Get scan by ID
+  async getScanById(scanId: string, userId?: string): Promise<{ success: boolean; data: ScanRecord }> {
+    const params = new URLSearchParams();
+    if (userId) {
+      params.append('user_id', userId);
+    }
+
+    const queryString = params.toString();
+    const endpoint = `/scan/${scanId}/${queryString ? `?${queryString}` : ''}`;
+
+    return this.makeRequest<{ success: boolean; data: ScanRecord }>(endpoint);
+  }
+
+  // Update scan record
+  async updateScan(request: UpdateScanRequest): Promise<{ success: boolean; message: string; data: ScanRecord }> {
+    return this.makeRequest<{ success: boolean; message: string; data: ScanRecord }>(
+      `/scan/${request.scan_id}/update/`,
+      {
+        method: 'PUT',
+        body: JSON.stringify(request),
+      }
+    );
+  }
+
+  // Delete single scan
+  async deleteScan(scanId: string, userId?: string): Promise<{ success: boolean; message: string; deleted_id: string }> {
+    const params = new URLSearchParams({ scan_id: scanId });
+    if (userId) {
+      params.append('user_id', userId);
+    }
+
+    return this.makeRequest<{ success: boolean; message: string; deleted_id: string }>(
+      `/delete-scan/?${params}`,
+      { method: 'DELETE' }
+    );
+  }
+
+  // Batch delete scans
+  async batchDeleteScans(request: BatchDeleteRequest): Promise<BatchDeleteResponse> {
+    return this.makeRequest<BatchDeleteResponse>('/batch-delete/', {
+      method: 'DELETE',
+      body: JSON.stringify(request),
+    });
+  }
+
+  // Health check
+  async healthCheck(): Promise<{ status: string; message: string; version: string }> {
+    return this.makeRequest<{ status: string; message: string; version: string }>('/health/');
+  }
+
+  // Check if backend is accessible
+  static async checkBackendHealth(): Promise<boolean> {
+    try {
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+      const healthUrl = `${apiUrl}/health/`;
+      
+      console.log('🏥 Checking backend health at:', healthUrl);
+      
+      const response = await fetch(healthUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Backend is healthy:', data);
+        return true;
+      } else {
+        console.warn('⚠️ Backend health check failed:', response.status, response.statusText);
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Backend health check error:', error);
+      return false;
+    }
+  }
+
+  // Utility methods for common operations
+
+  // Get all scans for a user (with automatic pagination)
+  async getAllScans(userId: string, batchSize: number = 100): Promise<ScanRecord[]> {
+    const allScans: ScanRecord[] = [];
+    let offset = 0;
+    let hasMore = true;
+
+    while (hasMore) {
+      const response = await this.getScanHistory(userId, batchSize, offset);
+      allScans.push(...response.data);
+      
+      if (response.data.length < batchSize) {
+        hasMore = false;
+      } else {
+        offset += batchSize;
+      }
+    }
+
+    return allScans;
+  }
+
+  // Get scans by status
+  async getScansByStatus(userId: string, status: string, limit: number = 50): Promise<ScanRecord[]> {
+    const allScans = await this.getAllScans(userId, limit);
+    return allScans.filter(scan => scan.status === status);
+  }
+
+  // Get scans by date range
+  async getScansByDateRange(
+    userId: string,
+    startDate: Date,
+    endDate: Date,
+    limit: number = 50
+  ): Promise<ScanRecord[]> {
+    const allScans = await this.getAllScans(userId, limit);
+    return allScans.filter(scan => {
+      const scanDate = new Date(scan.created_at);
+      return scanDate >= startDate && scanDate <= endDate;
+    });
+  }
+
+  // Get total storage used by user
+  async getTotalStorageUsed(userId: string): Promise<number> {
+    const analytics = await this.getScanAnalytics(userId, 365); // Last year
+    return analytics.data.total_file_size;
+  }
+
+  // Format file size for display
+  static formatFileSize(bytes: number): string {
+    if (bytes === 0) return '0 Bytes';
+    
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  }
+
+  // Format date for display
+  static formatDate(dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  }
+
+  // Get scan status color for UI
+  static getStatusColor(status: string): string {
+    switch (status.toLowerCase()) {
+      case 'uploaded':
+        return 'blue';
+      case 'processing':
+        return 'yellow';
+      case 'completed':
+        return 'green';
+      case 'failed':
+        return 'red';
+      default:
+        return 'gray';
+    }
+  }
 
   /**
    * Scan artwork and return classification results
@@ -11,7 +361,7 @@ export class ArtworkScanService {
   ): Promise<{ label: string; confidence: number }> {
     try {
       // For development, use this mock response
-      if (process.env.NODE_ENV === "development") {
+      if (import.meta.env.DEV) {
         // Simulate API call delay
         await new Promise(resolve => setTimeout(resolve, 2000));
         
@@ -30,7 +380,7 @@ export class ArtworkScanService {
       const formData = new FormData();
       formData.append("file", file);
 
-      const response = await fetch(this.API_URL, {
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: "POST",
         body: formData,
       });
@@ -49,4 +399,106 @@ export class ArtworkScanService {
       throw error;
     }
   }
+
+  /**
+   * Complete scan process: Upload to Cloudinary, scan artwork, and log to Supabase
+   */
+  static async completeScanProcess(
+    file: File,
+    userId: string = 'anonymous',
+    description: string = ''
+  ): Promise<ScanResult> {
+    try {
+      // Get the API base URL and log for debugging
+      const apiUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api';
+      const fullUrl = `${apiUrl}/complete-scan/`;
+      
+      console.log('🔍 Starting complete scan process...');
+      console.log('📡 API URL:', fullUrl);
+      console.log('👤 User ID:', userId);
+      console.log('📝 Description:', description);
+      console.log('📁 File:', file.name, `(${file.size} bytes, ${file.type})`);
+
+      // Validate file
+      if (!file || !file.type.startsWith('image/')) {
+        throw new Error('Invalid file type. Please select an image file.');
+      }
+
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        throw new Error('File size too large. Maximum size is 10MB.');
+      }
+
+      // Prepare form data
+      const formData = new FormData();
+      formData.append('image', file);
+      formData.append('user_id', userId);
+      if (description) {
+        formData.append('description', description);
+      }
+
+      console.log('📤 Sending request to backend...');
+
+      // Make the request with proper error handling
+      const response = await fetch(fullUrl, {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type header for FormData - browser will set it automatically
+      });
+
+      console.log('📥 Response received:', response.status, response.statusText);
+
+      if (!response.ok) {
+        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+        
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorData.message || errorMessage;
+        } catch (parseError) {
+          console.warn('Could not parse error response:', parseError);
+        }
+        
+        throw new Error(`Scan failed: ${errorMessage}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Scan completed successfully:', result);
+      
+      if (!result.success) {
+        throw new Error(result.error || result.message || 'Scan process failed');
+      }
+
+      // Return the scan result with Cloudinary URL
+      return {
+        label: result.data.label,
+        confidence: result.data.confidence,
+        cloudinary_url: result.data.cloudinary_url,
+        public_id: result.data.public_id
+      };
+
+    } catch (error) {
+      console.error('❌ Error in complete scan process:', error);
+      
+      // Provide user-friendly error messages
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        throw new Error(
+          'Unable to connect to the server. Please check if the backend is running and try again.'
+        );
+      }
+      
+      if (error instanceof Error) {
+        throw error;
+      }
+      
+      throw new Error('An unexpected error occurred during the scan process.');
+    }
+  }
 }
+
+// Export singleton instance
+export const artworkScanService = new ArtworkScanService();
+
+// Export the class for custom instances
+export default ArtworkScanService;
+
+// Export the class as a named export as well
+export { ArtworkScanService };

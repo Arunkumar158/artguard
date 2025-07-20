@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MainLayout } from "@/components/MainLayout";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,17 +11,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Copy } from "lucide-react";
+import { Copy, Loader2, Edit, Save, X } from "lucide-react";
+import { supabase } from "@/lib/supabaseClient";
+import { User } from "@supabase/supabase-js";
 
-// Placeholder user data
-const user = {
-  name: "Jane Doe",
-  email: "jane.doe@email.com",
-  emailVerified: true,
-  avatarUrl: "",
-  lastLogin: "2024-07-09 14:32",
-};
-
+// Placeholder data for other sections
 const billing = {
   plan: "Pro",
   planColor: "#FF7F50",
@@ -34,7 +28,6 @@ const billing = {
 };
 
 const api = {
-  key: "sk-*************",
   usage: 4000,
   limit: 10000,
   reset: "August 1, 2025",
@@ -42,23 +35,128 @@ const api = {
 
 export default function Account() {
   const { toast } = useToast();
-  const [name, setName] = useState(user.name);
-  const [email] = useState(user.email);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [tempName, setTempName] = useState("");
   const [saving, setSaving] = useState(false);
-  const [apiKey, setApiKey] = useState(api.key);
+  const [apiKey, setApiKey] = useState("sk-*************");
   const [copied, setCopied] = useState(false);
   const [regenOpen, setRegenOpen] = useState(false);
   const [changePwOpen, setChangePwOpen] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [twoFA, setTwoFA] = useState(false);
 
+  // Fetch user data on component mount
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      const { data: { user: currentUser }, error } = await supabase.auth.getUser();
+      
+      if (error) {
+        console.error('Error fetching user:', error);
+        toast({ 
+          title: "Error", 
+          description: "Failed to fetch user data. Please try again.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      if (currentUser) {
+        setUser(currentUser);
+        setEmail(currentUser.email || "");
+        
+        // Try to get name from user metadata
+        const userName = currentUser.user_metadata?.full_name || 
+                        currentUser.user_metadata?.name || 
+                        currentUser.user_metadata?.display_name ||
+                        "Guest";
+        
+        setName(userName);
+        setTempName(userName);
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to fetch user data. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Profile actions
-  const handleSaveProfile = () => {
+  const handleSaveProfile = async () => {
+    if (!user) return;
+    
     setSaving(true);
-    setTimeout(() => {
-      setSaving(false);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: name }
+      });
+
+      if (error) {
+        throw error;
+      }
+
       toast({ title: "Profile updated!", description: "Your changes have been saved." });
-    }, 1000);
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to update profile. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleEditName = () => {
+    setTempName(name);
+    setIsEditingName(true);
+  };
+
+  const handleSaveName = async () => {
+    if (!user) return;
+    
+    setSaving(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        data: { full_name: tempName }
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      setName(tempName);
+      setIsEditingName(false);
+      toast({ title: "Name updated!", description: "Your name has been updated successfully." });
+    } catch (error) {
+      console.error('Error updating name:', error);
+      toast({ 
+        title: "Error", 
+        description: "Failed to update name. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setTempName(name);
+    setIsEditingName(false);
   };
 
   // API actions
@@ -106,31 +204,75 @@ export default function Account() {
               <CardDescription className="text-sm sm:text-base">Update your personal information.</CardDescription>
             </CardHeader>
             <CardContent className="p-4 sm:p-6">
-              <div className="flex flex-col items-center gap-4 sm:gap-6">
-                <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
-                  {user.avatarUrl ? (
-                    <AvatarImage src={user.avatarUrl} alt={name} />
-                  ) : (
-                    <AvatarFallback className="text-lg sm:text-xl">{name[0]}</AvatarFallback>
-                  )}
-                </Avatar>
-                <div className="w-full flex flex-col gap-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Name</label>
-                    <Input value={name} onChange={e => setName(e.target.value)} className="max-w-md w-full" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium mb-1">Email</label>
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-                      <Input value={email} readOnly className="max-w-md w-full bg-gray-100" />
-                      {user.emailVerified && <Badge variant="secondary" className="w-fit">Verified</Badge>}
-                    </div>
+              {loading ? (
+                <div className="flex flex-col items-center gap-4 sm:gap-6">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <span className="text-sm text-muted-foreground">Loading profile...</span>
                   </div>
                 </div>
-                <Button onClick={handleSaveProfile} disabled={saving} className="w-full max-w-md mt-2">
-                  {saving ? "Saving..." : "Save changes"}
-                </Button>
-              </div>
+              ) : user ? (
+                <div className="flex flex-col items-center gap-4 sm:gap-6">
+                  <Avatar className="h-16 w-16 sm:h-20 sm:w-20">
+                    {user.user_metadata?.avatar_url ? (
+                      <AvatarImage src={user.user_metadata.avatar_url} alt={name} />
+                    ) : (
+                      <AvatarFallback className="text-lg sm:text-xl">{name[0] || "G"}</AvatarFallback>
+                    )}
+                  </Avatar>
+                  <div className="w-full flex flex-col gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Name</label>
+                      <div className="flex items-center gap-2">
+                        {isEditingName ? (
+                          <>
+                            <Input value={tempName} onChange={e => setTempName(e.target.value)} className="max-w-md w-full" />
+                            <Button variant="outline" size="icon" onClick={handleSaveName} disabled={saving} className="text-green-600 hover:text-green-700">
+                              <Save className="w-4 h-4" />
+                            </Button>
+                            <Button variant="outline" size="icon" onClick={handleCancelEdit} disabled={saving} className="text-red-600 hover:text-red-700">
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </>
+                        ) : (
+                          <>
+                            <span className="font-medium text-sm sm:text-base">{name}</span>
+                            <Button variant="outline" size="icon" onClick={handleEditName} disabled={saving} className="text-blue-600 hover:text-blue-700">
+                              <Edit className="w-4 h-4" />
+                            </Button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">Email</label>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                        <Input value={email} readOnly className="max-w-md w-full bg-gray-100" />
+                        {user.email_confirmed_at && <Badge variant="secondary" className="w-fit">Verified</Badge>}
+                      </div>
+                    </div>
+                  </div>
+                  <Button onClick={handleSaveProfile} disabled={saving} className="w-full max-w-md mt-2">
+                    {saving ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save changes"
+                    )}
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center gap-4 sm:gap-6">
+                  <div className="text-center">
+                    <p className="text-sm text-muted-foreground">No user data available</p>
+                    <Button onClick={fetchUserData} variant="outline" className="mt-2">
+                      Retry
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
@@ -200,7 +342,7 @@ export default function Account() {
                   <Switch checked={twoFA} onCheckedChange={setTwoFA} />
                   <span className="text-sm sm:text-base">Enable 2FA (coming soon)</span>
                 </div>
-                <div className="text-xs text-muted-foreground">Last login: {user.lastLogin}</div>
+                <div className="text-xs text-muted-foreground">Last login: {user?.last_sign_in_at ? new Date(user.last_sign_in_at).toLocaleDateString() : "N/A"}</div>
                 <div className="mt-4">
                   <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
                     <AlertDialogTrigger asChild>

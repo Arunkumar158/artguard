@@ -1,1 +1,391 @@
+# ArtGuard - AI-Powered Artwork Scanner
 
+ArtGuard is a comprehensive AI-powered artwork scanner that helps users identify and analyze artwork authenticity using advanced machine learning models. The application features a Django backend with Cloudinary for image storage and Supabase for scan history management.
+
+## 🚀 Features
+
+### Core Functionality
+- **AI-Powered Artwork Analysis**: Advanced ML models for artwork authenticity detection
+- **Cloudinary Integration**: Secure and scalable image storage with automatic upload during scan process
+- **Supabase Integration**: Comprehensive scan history management with analytics and Cloudinary URL storage
+- **Real-time Processing**: Fast and accurate artwork analysis with integrated image upload
+- **User-friendly Interface**: Modern React frontend with intuitive UX and image preview
+
+### Enhanced Scan History Management
+- **Comprehensive Logging**: Detailed scan records with metadata
+- **Advanced Analytics**: User scan statistics and insights
+- **Search & Filtering**: Powerful search capabilities across scan history
+- **Batch Operations**: Efficient bulk management of scan records
+- **Pagination**: Optimized performance for large datasets
+- **Real-time Updates**: Live data synchronization
+
+## 🏗️ Architecture
+
+```
+ArtGuard/
+├── artguard_backend/          # Django backend
+│   ├── scanner/              # Main Django app
+│   │   ├── utils/           # Utility modules
+│   │   │   ├── storage.py   # Cloudinary integration
+│   │   │   └── supabase_client.py  # Enhanced Supabase client
+│   │   ├── views.py         # API endpoints (including complete-scan)
+│   │   └── urls.py          # URL routing
+│   └── settings.py          # Django configuration
+├── src/                     # React frontend
+│   ├── components/          # React components
+│   ├── lib/                # Utility libraries
+│   │   └── cloudinary.ts   # Cloudinary upload utilities
+│   ├── services/           # API services
+│   │   └── ArtworkScanService.ts  # Enhanced scan service with Cloudinary
+│   └── pages/              # Page components
+└── docs/                   # Documentation
+```
+
+## 🛠️ Technology Stack
+
+### Backend
+- **Django 5.0**: Web framework
+- **Django REST Framework**: API development
+- **Supabase**: Database and real-time features
+- **Cloudinary**: Image storage and management
+- **Python 3.8+**: Programming language
+
+### Frontend
+- **React 18**: UI framework
+- **TypeScript**: Type safety
+- **Vite**: Build tool
+- **Tailwind CSS**: Styling
+- **Shadcn/ui**: Component library
+
+### AI/ML
+- **PyTorch**: Machine learning framework
+- **Custom CNN Models**: Artwork analysis models
+
+## 📦 Installation
+
+### Prerequisites
+- Python 3.8+
+- Node.js 18+
+- Supabase account
+- Cloudinary account
+
+### Backend Setup
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/artguard.git
+   cd artguard
+   ```
+
+2. **Set up Python environment**
+   ```bash
+   cd artguard_backend
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   ```
+
+3. **Configure environment variables**
+   Create a `.env` file in the `artguard_backend` directory:
+   ```env
+   SECRET_KEY=your_django_secret_key
+   DEBUG=True
+   SUPABASE_URL=your_supabase_project_url
+   SUPABASE_SERVICE_KEY=your_supabase_service_role_key
+   CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+   CLOUDINARY_API_KEY=your_cloudinary_api_key
+   CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+   ```
+
+4. **Set up Supabase database**
+   Run the SQL schema from `artguard_backend/SUPABASE_SETUP.md` in your Supabase SQL editor.
+
+5. **Run Django migrations**
+   ```bash
+   python manage.py migrate
+   ```
+
+6. **Start the backend server**
+   ```bash
+   python manage.py runserver
+   ```
+
+### Frontend Setup
+
+1. **Install dependencies**
+   ```bash
+   cd ..  # Back to project root
+   npm install
+   ```
+
+2. **Configure environment variables**
+   Create a `.env` file in the project root:
+   ```env
+   VITE_API_BASE_URL=http://localhost:8000/api
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+## 🔧 API Endpoints
+
+### Core Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/upload/` | Upload image with Supabase logging |
+| `GET` | `/api/health/` | Health check |
+| `GET` | `/api/scan-history/` | Get scan history with pagination |
+| `GET` | `/api/analytics/` | Get scan analytics |
+| `GET` | `/api/search/` | Search scan history |
+| `GET` | `/api/scan/{id}/` | Get specific scan |
+| `PUT` | `/api/scan/{id}/update/` | Update scan record |
+| `DELETE` | `/api/delete-scan/` | Delete single scan |
+| `DELETE` | `/api/batch-delete/` | Batch delete scans |
+
+### Enhanced Features
+
+#### Scan Analytics
+```typescript
+// Get user analytics for last 30 days
+const analytics = await artworkScanService.getScanAnalytics('user123', 30);
+console.log(analytics.data);
+// {
+//   total_scans: 45,
+//   total_file_size: 15728640,
+//   average_file_size: 349525,
+//   period_days: 30,
+//   scans_per_day: 1.5
+// }
+```
+
+#### Search Functionality
+```typescript
+// Search scans by description or URL
+const results = await artworkScanService.searchScanHistory('user123', 'mona lisa', 20);
+console.log(results.data);
+```
+
+#### Batch Operations
+```typescript
+// Delete multiple scans at once
+const result = await artworkScanService.batchDeleteScans({
+  scan_ids: ['uuid1', 'uuid2', 'uuid3'],
+  user_id: 'user123'
+});
+console.log(result.deleted_count); // 3
+```
+
+## 📊 Database Schema
+
+### Enhanced Scan History Table
+
+```sql
+CREATE TABLE scan_history (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    artwork_url TEXT NOT NULL,
+    result JSONB NOT NULL,
+    scan_timestamp TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    file_size BIGINT DEFAULT 0,
+    content_type TEXT DEFAULT '',
+    upload_url TEXT DEFAULT '',
+    public_id TEXT DEFAULT '',
+    description TEXT DEFAULT '',
+    status TEXT DEFAULT 'uploaded',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
+
+### Performance Indexes
+
+```sql
+CREATE INDEX idx_scan_history_user_id ON scan_history(user_id);
+CREATE INDEX idx_scan_history_created_at ON scan_history(created_at DESC);
+CREATE INDEX idx_scan_history_status ON scan_history(status);
+CREATE INDEX idx_scan_history_scan_timestamp ON scan_history(scan_timestamp DESC);
+```
+
+## 🔒 Security Features
+
+### Authentication & Authorization
+- **User Validation**: Optional user ID validation for ownership checks
+- **Input Sanitization**: All inputs validated and sanitized
+- **Row Level Security**: Optional RLS policies for additional security
+- **Service Key Protection**: Backend-only service key usage
+
+### Data Protection
+- **Encrypted Storage**: Supabase provides encryption at rest
+- **Secure API**: HTTPS-only communication
+- **Input Validation**: Comprehensive input validation
+- **Error Handling**: Secure error messages without data leakage
+
+## 📈 Performance Optimizations
+
+### Database Performance
+- **Optimized Indexes**: Strategic indexing for common queries
+- **Pagination**: Efficient pagination for large datasets
+- **Batch Operations**: Reduced database round trips
+- **Connection Pooling**: Supabase handles connection management
+
+### Frontend Performance
+- **Lazy Loading**: Components loaded on demand
+- **Caching**: API response caching
+- **Optimized Bundles**: Vite for fast builds
+- **Image Optimization**: Cloudinary automatic optimization
+
+## 🧪 Testing
+
+### Backend Testing
+```bash
+cd artguard_backend
+python manage.py test
+```
+
+### Frontend Testing
+```bash
+npm run test
+```
+
+### API Testing
+```bash
+# Test health endpoint
+curl http://localhost:8000/api/health/
+
+# Test scan history
+curl "http://localhost:8000/api/scan-history/?user_id=test&limit=10"
+```
+
+## 📝 Usage Examples
+
+### Complete Scan Process with Cloudinary Upload
+```typescript
+import { ArtworkScanService } from './services/ArtworkScanService';
+
+const completeScan = async (file: File) => {
+  try {
+    const result = await ArtworkScanService.completeScanProcess(
+      file,
+      'user123',
+      'Mona Lisa artwork scan'
+    );
+    
+    console.log('Scan completed:', result.label);
+    console.log('Confidence:', result.confidence);
+    console.log('Cloudinary URL:', result.cloudinary_url);
+  } catch (error) {
+    console.error('Scan failed:', error);
+  }
+};
+```
+
+### Upload Image with Enhanced Logging
+```typescript
+import { artworkScanService } from './services/ArtworkScanService';
+
+const uploadImage = async (file: File) => {
+  try {
+    const result = await artworkScanService.uploadImage(
+      file,
+      'user123',
+      'Mona Lisa artwork scan'
+    );
+    
+    console.log('Upload successful:', result.data);
+    console.log('Scan ID:', result.data.scan_id);
+  } catch (error) {
+    console.error('Upload failed:', error);
+  }
+};
+```
+
+### Get Scan Analytics
+```typescript
+const getAnalytics = async () => {
+  const analytics = await artworkScanService.getScanAnalytics('user123', 30);
+  
+  console.log('Total scans:', analytics.data.total_scans);
+  console.log('Storage used:', ArtworkScanService.formatFileSize(analytics.data.total_file_size));
+  console.log('Scans per day:', analytics.data.scans_per_day);
+};
+```
+
+### Search and Filter Scans
+```typescript
+const searchScans = async (query: string) => {
+  const results = await artworkScanService.searchScanHistory('user123', query, 20);
+  
+  results.data.forEach(scan => {
+    console.log(`${scan.description} - ${scan.status}`);
+  });
+};
+```
+
+## 🚀 Deployment
+
+### Environment Setup
+1. Create `.env` files for both frontend and backend
+2. Configure Cloudinary credentials and upload preset
+3. Set up Supabase connection
+4. See `CLOUDINARY_INTEGRATION_SETUP.md` for detailed instructions
+
+### Backend Deployment (Django)
+1. Set up production environment variables
+2. Configure static files and media storage
+3. Set up database migrations
+4. Configure web server (nginx + gunicorn)
+
+### Frontend Deployment (React)
+1. Build production bundle: `npm run build`
+2. Deploy to CDN or static hosting
+3. Configure environment variables
+
+### Supabase Setup
+1. Create production Supabase project
+2. Run database schema migrations
+3. Configure RLS policies
+4. Set up monitoring and alerts
+
+## 📚 Documentation
+
+- [Supabase Integration Guide](artguard_backend/SUPABASE_SETUP.md)
+- [API Documentation](docs/API.md)
+- [Frontend Components](docs/COMPONENTS.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch: `git checkout -b feature-name`
+3. Commit changes: `git commit -am 'Add feature'`
+4. Push to branch: `git push origin feature-name`
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🆘 Support
+
+- **Documentation**: Check the docs folder for detailed guides
+- **Issues**: Report bugs and feature requests via GitHub Issues
+- **Discussions**: Join community discussions on GitHub Discussions
+
+## 🔄 Changelog
+
+### v1.0.0 (Latest)
+- ✨ Enhanced Supabase integration with comprehensive scan history management
+- 📊 Advanced analytics and reporting features
+- 🔍 Powerful search and filtering capabilities
+- ⚡ Batch operations for efficient data management
+- 🔒 Enhanced security with user validation and RLS
+- 📱 Improved React components with modern UI/UX
+- 🚀 Performance optimizations and caching
+- 📝 Comprehensive documentation and examples
+
+---
+
+**ArtGuard** - Protecting art through AI-powered analysis and secure, scalable scan history management.

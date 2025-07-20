@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ScanButton } from "@/components/ScanButton";
 import { ResultDisplay } from "@/components/ResultDisplay";
@@ -7,6 +7,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import ScanHistory from "./ScanHistory";
+import { displayTroubleshootingInfo } from "@/lib/debug";
 
 const Index = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -17,6 +18,17 @@ const Index = () => {
     confidence: number;
   } | null>(null);
   const { toast } = useToast();
+
+  // Debug mode - show troubleshooting info in development
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      console.log('🔧 Development mode detected - enabling debug features');
+      // Display troubleshooting info after a short delay
+      setTimeout(() => {
+        displayTroubleshootingInfo();
+      }, 1000);
+    }
+  }, []);
 
   const handleFileChange = (uploadedFile: File | null) => {
     setFile(uploadedFile);
@@ -44,18 +56,43 @@ const Index = () => {
       setIsScanning(true);
       setResult(null);
       
-      const scanResult = await ArtworkScanService.scanArtwork(file);
+      // Check backend health first
+      const isBackendHealthy = await ArtworkScanService.checkBackendHealth();
+      if (!isBackendHealthy) {
+        throw new Error(
+          "Backend server is not accessible. Please ensure the Django server is running on http://localhost:8000"
+        );
+      }
+      
+      // Use the complete scan process that includes Cloudinary upload
+      const scanResult = await ArtworkScanService.completeScanProcess(file, 'anonymous', 'Artwork scan');
       setResult(scanResult);
       
       toast({
         title: "Scan complete",
-        description: `Classified as ${scanResult.label}`,
+        description: `Classified as ${scanResult.label}. Image uploaded to Cloudinary.`,
       });
     } catch (error) {
       console.error("Scanning error:", error);
+      
+      let errorMessage = "There was an error processing your artwork";
+      
+      if (error instanceof Error) {
+        errorMessage = error.message;
+        
+        // Provide more specific error messages
+        if (error.message.includes('Failed to fetch') || error.message.includes('Unable to connect')) {
+          errorMessage = "Cannot connect to the server. Please check if the backend is running and try again.";
+        } else if (error.message.includes('Invalid file type')) {
+          errorMessage = "Please select a valid image file (JPG, PNG, GIF, or WebP).";
+        } else if (error.message.includes('File size too large')) {
+          errorMessage = "File size is too large. Please select an image smaller than 10MB.";
+        }
+      }
+      
       toast({
         title: "Scanning failed",
-        description: "There was an error processing your artwork",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
